@@ -1,0 +1,120 @@
+// Decompiled by DJ v3.7.7.81 Copyright 2004 Atanas Neshkov  Date: 24.1.2005 20:09:07
+// Home Page : http://members.fortunecity.com/neshkov/dj.html  - Check often for new version!
+// Decompiler options: packimports(3) 
+// Source File Name:   DDE.java
+
+package com.javaparts.dde;
+
+import java.io.*;
+import java.net.URL;
+import java.util.List;
+import java.util.Vector;
+
+// Referenced classes of package com.javaparts.dde:
+//            DDEEvent, DDEDataChangeListener, DDEException
+
+public class DDE
+{
+
+    public DDE()
+    {
+        listeners = new Vector();
+    }
+
+    public native void connect(String s, String s1)
+        throws DDEException;
+
+    public native void disconnect()
+        throws DDEException;
+
+    public native byte[] request(String s, int i)
+        throws DDEException;
+
+    public byte[] request(String s)
+        throws DDEException
+    {
+        return request(s, 1000);
+    }
+
+    public native void execute(String s, int i)
+        throws DDEException;
+
+    public void execute(String s)
+        throws DDEException
+    {
+        execute(s, 5000);
+    }
+
+    public native void poke(String s, byte abyte0[], int i)
+        throws DDEException;
+
+    public void poke(String s, byte abyte0[])
+        throws DDEException
+    {
+        poke(s, abyte0, 1000);
+    }
+
+    public native void beginAdvice(String s)
+        throws DDEException;
+
+    public native void endAdvice(String s)
+        throws DDEException;
+
+    public native void startConversation();
+
+    public native void stopConversation();
+
+    public void addDataChangeListener(DDEDataChangeListener ddedatachangelistener)
+    {
+        listeners.add(ddedatachangelistener);
+    }
+
+    public void removeDataChangeListener(DDEDataChangeListener ddedatachangelistener)
+    {
+        listeners.remove(ddedatachangelistener);
+    }
+
+    private void fireDataChangeEvent(String s, byte abyte0[])
+    {
+        DDEEvent ddeevent = new DDEEvent(this, s, abyte0);
+        for(int i = 0; i < listeners.size(); i++)
+            ((DDEDataChangeListener)listeners.get(i)).onDataChange(ddeevent);
+
+    }
+
+    private void fireDisconnectEvent()
+    {
+        DDEEvent ddeevent = new DDEEvent(this);
+        for(int i = 0; i < listeners.size(); i++)
+            ((DDEDataChangeListener)listeners.get(i)).onDisconnect(ddeevent);
+
+    }
+
+    static Class _mthclass$(String s)
+    {
+        return Class.forName(s);
+        ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    private List listeners;
+
+    static 
+    {
+        try
+        {
+            InputStream inputstream = (com.javaparts.dde.DDE.class).getResource("javadde.dll").openStream();
+            File file = File.createTempFile("javadde", ".dll");
+            FileOutputStream fileoutputstream = new FileOutputStream(file);
+            byte abyte0[] = new byte[8192];
+            for(int i = inputstream.read(abyte0); i != -1; i = inputstream.read(abyte0))
+                fileoutputstream.write(abyte0, 0, i);
+
+            fileoutputstream.close();
+            file.deleteOnExit();
+            System.load(file.getPath());
+        }
+        catch(Exception exception) { }
+    }
+}
